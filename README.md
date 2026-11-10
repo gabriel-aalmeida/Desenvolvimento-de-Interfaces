@@ -8,12 +8,13 @@ O LuxeStay é uma plataforma digital voltada para o segmento de turismo e hosped
 
 O objetivo principal do projeto é simplificar a busca por hotéis, pousadas e resorts, permitindo encontrar acomodações adequadas a diferentes necessidades e orçamentos, além de permitir simular reservas com praticidade.
 
-Missão e Visão
+## Missão e Visão
  
 Missão: Facilitar a descoberta de hospedagens, ajudando viajantes a encontrar opções adequadas às suas necessidades e ao seu orçamento.
 Visão: Proporcionar uma experiência digital simples, agradável e confiável para planejar viagens.
 
-Recursos e Componentes do Site
+## Recursos e Componentes do Site
+
 -Cards de Hospedagens: Exibição visual e organizada de hotéis, pousadas, resorts e destinos em destaque.
 
 -Abas de Pesquisa: Sistema de busca dinâmica e filtros por categorias e faixa de preço.
