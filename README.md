@@ -15,11 +15,19 @@ Visão: Proporcionar uma experiência digital simples, agradável e confiável p
 
 Recursos e Componentes do Site
 -Cards de Hospedagens: Exibição visual e organizada de hotéis, pousadas, resorts e destinos em destaque.
+
 -Abas de Pesquisa: Sistema de busca dinâmica e filtros por categorias e faixa de preço.
+
 -Carrossel Interativo: Banner principal em destaque com fotos das acomodações e ofertas vigentes.
+
 -Cards Explicativos: Seção detalhada com os diferenciais e benefícios da plataforma.
+
 -Formulário de Contato: Canal direto para envio de mensagens, dúvidas e suporte ao cliente.
+
 -Área de Login: Interface para autenticação e acesso de usuários cadastrados.
+
 -Modo Claro / Escuro: Alternância de tema visual para personalização e conforto visual.
+
 -Ajuste de Fonte: Recursos de acessibilidade para redimensionamento do tamanho dos textos.
+
 -Rodapé: Links rápidos de navegação, termos de uso e informações de contato.
