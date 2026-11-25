@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="pt-BR">
+
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#003B95">
+    <title>Meu perfil | LuxeStay</title>
+    <link rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/conta.css">
+
+    <script defer src="js/hospedagens.js"></script>
+    <script defer src="js/script.js"></script>
+    <script defer src="js/conta.js"></script>
+    <script defer src="js/campos-conta.js"></script>
+    <script defer src="js/perfil.js"></script>
+  </head>
+
+  <body>
+    <a class="skip-link" href="#principal">Ir para o conteúdo</a>
+    <header class="site-header">
+      <div class="shell header-inner">
+        <a class="brand" href="index.html" aria-label="LuxeStay, início"><span class="brand-mark"
+            aria-hidden="true">L</span> Luxe<span>Stay</span></a>
+        <nav aria-label="Menu principal">
+          <a href="index.html">Início</a>
+          <a href="hospedagens.html">Hospedagens</a>
+          <a href="index.html#ofertas">Black Friday</a>
+          <a href="contato.html">Contato</a>
+        </nav>
+        <div class="header-actions">
+          <details class="access">
+            <summary>Acessibilidade</summary>
+            <div class="access-options">
+              <label for="tema">Aparência</label>
+              <select id="tema">
+                <option value="light">Modo claro</option>
+                <option value="dark">Modo escuro</option>
+              </select>
+              <label for="tamanho">Tamanho do texto</label>
+              <select id="tamanho">
+                <option value="normal">Padrão</option>
+                <option value="grande">Maior</option>
+                <option value="extra">Muito maior</option>
+              </select>
+            </div>
+          </details>
+          <a class="action compact" data-account href="login.html" aria-current="page"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="images/interface.svg#conta"></use></svg><span class="account-avatar" aria-hidden="true" hidden></span><span class="account-name">Minha conta</span></a>
+        </div>
+      </div>
+    </header>
+    <main id="principal" class="shell profile-page" hidden>
+      <h1>Meu perfil</h1>
+      <div class="checkout-return" hidden><a class="action" id="retomar-pagamento" href="pagamento.html">Continuar para o pagamento →</a></div>
+      <div class="profile-layout">
+        <aside class="profile-sidebar" aria-label="Minha conta">
+          <div class="member-card">
+            <span class="account-avatar large" id="perfil-avatar" aria-hidden="true"></span>
+            <strong id="perfil-nome"></strong>
+            <span class="member-badge">Membro LuxeStay</span>
+            <p id="perfil-metodo"></p>
+          </div>
+          <nav class="profile-nav" aria-label="Menu do perfil">
+            <a href="#dados" aria-current="location"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="images/interface.svg#conta"></use></svg> Dados pessoais</a>
+            <a href="#reservas"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="images/interface.svg#reserva"></use></svg> Minhas reservas</a>
+            <a href="#seguranca"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="images/interface.svg#cadeado"></use></svg> Segurança e senha</a>
+            <button id="sair-conta" type="button"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="images/interface.svg#sair"></use></svg> Sair da conta</button>
+          </nav>
+        </aside>
+        <div class="profile-content">
+          <section id="dados" class="profile-panel" aria-labelledby="titulo-dados">
+            <div class="panel-heading"><h2 id="titulo-dados" tabindex="-1">Dados pessoais</h2>
+              <button class="account-edit" id="editar-dados" type="button" aria-expanded="false" aria-controls="form-perfil"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="images/interface.svg#editar"></use></svg> Editar perfil</button>
+            </div>
+            <dl class="personal-rows" id="lista-dados">
+              <div><dt>Nome completo</dt><dd data-personal="nome"></dd></div>
+              <div><dt>E-mail</dt><dd data-personal="email"></dd></div>
+              <div><dt>CPF</dt><dd data-personal="cpf"></dd></div>
+              <div><dt>Telefone</dt><dd data-personal="telefone"></dd></div>
+              <div><dt>CEP</dt><dd data-personal="cep"></dd></div>
+            </dl>
+            <form id="form-perfil" class="account-form profile-form" hidden>
+              <label for="edit-nome">Nome completo<input id="edit-nome" name="nome" type="text" autocomplete="name" maxlength="60" required></label>
+              <label for="edit-email">E-mail<input id="edit-email" name="email" type="email" autocomplete="email" placeholder="seuemail@gmail.com" maxlength="120" required></label>
+              <div class="account-pair">
+                <label for="edit-cpf">CPF<input id="edit-cpf" name="cpf" type="text" inputmode="numeric" data-mask="cpf" placeholder="000.000.000-00" pattern="[0-9]{3}\.[0-9]{3}\.[0-9]{3}-[0-9]{2}" ></label>
+                <label for="edit-fone">Telefone<input id="edit-fone" name="telefone" type="tel" autocomplete="tel-national" inputmode="tel" data-mask="telefone" placeholder="(00) 00000-0000" pattern="\([0-9]{2}\) [0-9]{4,5}-[0-9]{4}" ></label>
+              </div>
+              <div class="cep-field">
+                <label for="edit-cep">CEP<input id="edit-cep" name="cep" type="text" autocomplete="postal-code" inputmode="numeric" data-mask="cep" placeholder="00000-000" pattern="[0-9]{5}-[0-9]{3}" aria-describedby="edit-local" ></label>
+                <span id="edit-local" class="cep-status" role="status"></span>
+              </div>
+              <div class="form-actions"><button class="action" type="submit">Salvar alterações</button><button class="action secondary" id="cancelar-edicao" type="button">Cancelar</button></div>
+              <p class="account-error" role="alert"></p>
+            </form>
+          </section>
+          <section id="reservas" class="profile-panel" aria-labelledby="titulo-reservas" hidden>
+            <div class="panel-heading"><h2 id="titulo-reservas" tabindex="-1">Minhas reservas</h2></div>
+            <div id="reservas-perfil"></div>
+          </section>
+          <section id="seguranca" class="profile-panel" aria-labelledby="titulo-seguranca" hidden>
+            <div class="panel-heading"><h2 id="titulo-seguranca" tabindex="-1">Segurança e senha</h2></div>
+            <p id="acesso-social" hidden></p>
+            <form class="account-form profile-form" id="form-senha">
+              <div class="password-field">
+                <label for="seg-atual">Senha atual</label>
+                <div class="password-control"><input id="seg-atual" name="atual" type="password" autocomplete="current-password" required>
+                  <button class="eye-button" type="button" data-eye="seg-atual" aria-label="Mostrar senha atual" aria-pressed="false"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="images/interface.svg#olho"></use></svg></button>
+                </div>
+              </div>
+              <div class="account-pair"><div class="password-field">
+                <label for="seg-nova">Nova senha</label>
+                <div class="password-control"><input id="seg-nova" aria-describedby="regras-seguranca" name="senha" type="password" autocomplete="new-password" minlength="6" required>
+                  <button class="eye-button" type="button" data-eye="seg-nova" aria-label="Mostrar nova senha" aria-pressed="false"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="images/interface.svg#olho"></use></svg></button>
+                </div>
+              </div>
+                <div class="password-field">
+                <label for="seg-confirmar">Confirmar nova senha</label>
+                <div class="password-control"><input id="seg-confirmar" aria-describedby="regras-seguranca" name="confirmacao" type="password" autocomplete="new-password" minlength="6" required>
+                  <button class="eye-button" type="button" data-eye="seg-confirmar" aria-label="Mostrar confirmar nova senha" aria-pressed="false"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="images/interface.svg#olho"></use></svg></button>
+                </div>
+              </div></div>
+              <div class="password-rules" id="regras-seguranca" aria-live="polite">
+                <span data-rule="tamanho">Mínimo de 6 caracteres</span><span data-rule="iguais">As senhas devem coincidir</span>
+              </div>
+              <button type="submit" class="action">Salvar nova senha</button>
+              <p class="account-error" role="alert"></p>
+            </form>
+          </section>
+        </div>
+      </div>
+      <template id="sem-reservas">
+        <div class="empty-bookings">
+          <span class="empty-icon"><svg class="ui-icon" aria-hidden="true"><use href="images/interface.svg#reserva"></use></svg></span>
+          <h3>Você ainda não tem reservas</h3>
+          <p>As estadias confirmadas com esta conta aparecem aqui.</p>
+          <a class="action" href="hospedagens.html">Explorar hospedagens</a>
+        </div>
+      </template>
+      <template id="cartao-reserva">
+        <article class="booking-card">
+          <div class="booking-preview"><div class="stay-photo"></div>
+            <div><span class="confirmed-badge">Reserva confirmada (Modo teste)</span>
+              <h3><a href="detalhes.html"></a></h3><p class="booking-city"></p></div></div>
+          <dl class="booking-details">
+            <div><dt>Check-in</dt><dd><time data-date="checkin"></time></dd></div>
+            <div><dt>Check-out</dt><dd><time data-date="checkout"></time></dd></div>
+            <div><dt>Hóspedes</dt><dd class="booking-guests"></dd></div>
+          </dl>
+          <div class="booking-foot"><span class="booking-code"></span><div>Total <strong class="booking-total"></strong></div></div>
+        </article>
+      </template>
+      <div id="perfil-toast" class="profile-toast" role="status"></div>
+    </main>
+    <footer class="site-footer">
+      <div class="shell footer-inner">
+        <div class="footer-about">
+          <a class="brand" href="index.html">Luxe<span>Stay</span></a>
+          <p>Compare diárias de hotéis, pousadas e resorts pelo Brasil.</p>
+        </div>
+        <nav aria-label="Links rápidos do rodapé">
+          <h2>Links rápidos</h2>
+          <a href="index.html">Início</a>
+          <a href="hospedagens.html">Hospedagens</a>
+          <a href="index.html#ofertas">Black Friday</a>
+        </nav>
+        <nav aria-label="Suporte do rodapé">
+          <h2>Suporte</h2>
+          <a href="contato.html">Fale com a gente</a>
+          <a data-account-footer href="login.html">Minha conta</a>
+        </nav>
+        <p class="footer-project">Projeto acadêmico de Desenvolvimento de Interfaces.</p>
+      </div>
+    </footer>
+  </body>
+
+</html>

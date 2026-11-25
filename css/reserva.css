@@ -1,0 +1,525 @@
+.quote-hero {
+  background:
+    radial-gradient(ellipse at 92% 2%, #294e8e 0%, transparent 48%),
+    linear-gradient(110deg, #10203e 5%, #17335e 100%);
+  color: #fff;
+}
+
+.quote-hero-inner {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: .45rem 1rem;
+  padding-block: 1.2rem 3.75rem;
+}
+
+.quote-hero h1,
+.quote-hero p {
+  grid-column: 1 / -1;
+}
+
+.quote-hero h1 {
+  margin-top: .35rem;
+  font-size: var(--title-size);
+  color: #fff;
+  letter-spacing: -.02em;
+}
+
+.quote-hero p {
+  color: #d8e5fa;
+}
+
+.quote-back {
+  justify-self: start;
+  color: #f3f7ff;
+  font-size: .88rem;
+  text-underline-offset: .2em;
+}
+
+.quote-back:focus-visible {
+  outline-color: #fff;
+}
+
+.quote-progress {
+  display: flex;
+  align-items: center;
+  gap: .6rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: .83rem;
+  font-weight: 700;
+}
+
+.quote-progress li {
+  display: flex;
+  align-items: center;
+  gap: .6rem;
+  color: #d0ddf2;
+}
+
+.quote-progress [aria-current] {
+  color: #fff;
+}
+
+.quote-progress [aria-current]::before {
+  content: "";
+  width: .5rem;
+  height: .5rem;
+  border-radius: 50%;
+  background: var(--gold);
+}
+
+.quote-progress li + li::after {
+  content: "";
+  order: -1;
+  width: 1.1rem;
+  height: 1px;
+  background: #8da8ce;
+}
+
+.quote-form {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1.42fr) minmax(0, 1fr);
+  align-items: start;
+  gap: 1.15rem;
+  margin-block: -2.2rem clamp(2rem, 5vw, 3.75rem);
+}
+
+.quote-main {
+  display: grid;
+  gap: 1rem;
+  min-width: 0;
+}
+
+.quote-section,
+.quote-summary {
+  border-radius: var(--card-radius);
+  box-shadow: var(--card-shadow);
+}
+
+.quote-section {
+  padding: clamp(1rem, 2.7vw, 1.8rem);
+}
+
+.quote-section h2,
+.quote-price h2,
+.quote-property h2 {
+  font-size: 1.25rem;
+}
+
+.quote-section > p {
+  margin-top: .35rem;
+  font-size: .9rem;
+}
+
+.quote-dates {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: .8rem;
+  margin-top: 1.2rem;
+}
+
+.quote-dates .reservation-date {
+  grid-template-columns: minmax(0, 1fr);
+  gap: .35rem;
+  font-weight: 700;
+}
+
+.quote-dates .reservation-date > label { font-size: var(--micro); font-weight: 400; color: var(--muted); }
+
+.quote-dates .reservation-date-controls {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 2.75rem;
+  gap: .35rem;
+}
+
+.quote-dates .reservation-date-controls input {
+  width: 100%;
+  min-width: 0;
+  padding-inline: .6rem;
+  font-weight: 500;
+}
+
+.quote-dates .reservation-date-controls .action {
+  width: 100%;
+  height: 100%;
+  padding-inline: .35rem;
+}
+
+.quote-dates .reservation-date-controls .action span {
+  display: none;
+}
+
+.quote-dates .reservation-date-controls input[type="date"]:not(.reservation-picker) {
+  grid-column: 1 / -1;
+}
+
+.quote-dates input[aria-invalid="true"] {
+  border-color: #bd5360;
+}
+
+.quote-section .quote-error {
+  margin-top: .75rem;
+  color: #9d283e;
+  font-weight: 700;
+}
+
+[data-theme="dark"] .quote-section .quote-error {
+  color: #ffadb7;
+}
+
+.quote-occupancy {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: .65rem 1rem;
+  margin: 1.25rem 0 0;
+  padding-top: .9rem;
+  border-top: 1px solid var(--line);
+}
+
+.quote-occupancy label {
+  display: grid;
+  gap: .35rem;
+  min-width: 0;
+  font-size: var(--micro);
+  font-weight: 400;
+  color: var(--muted);
+}
+
+#reserva-grupo {
+  margin-block: .5rem;
+  font-size: .92rem;
+}
+
+.quote-next {
+  padding: .85rem 1rem;
+  border: 1px solid var(--line);
+  border-inline-start-width: .25rem;
+  border-inline-start-color: var(--accent);
+  border-radius: .65rem;
+  background: var(--soft);
+}
+
+.quote-next h2 {
+  font-size: .98rem;
+}
+
+.quote-next p {
+  margin-top: .2rem;
+  color: var(--muted);
+  font-size: .88rem;
+}
+
+.quote-summary {
+  padding: 0;
+}
+
+.quote-photo {
+  height: clamp(8.5rem, 17vw, 11rem);
+}
+
+.quote-property-copy {
+  padding: .95rem clamp(.85rem, 2vw, 1.45rem);
+}
+
+.quote-property h2 {
+  margin: .15rem 0;
+}
+
+.quote-property h2 a {
+  color: var(--accent);
+  font-size: var(--name-size);
+  text-decoration: none;
+}
+
+.quote-property h2 a:hover {
+  text-decoration: underline;
+}
+
+.quote-property-copy > .subtle {
+  font-size: .85rem;
+}
+
+.quote-rating {
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: .35rem;
+  margin-top: .5rem;
+  font-size: .8rem;
+  text-decoration: none;
+}
+
+.quote-rating:hover .rating-copy b { text-decoration: underline; }
+.rating-copy { flex-direction: column; }
+
+.quote-rating strong {
+  padding: .35rem .46rem;
+  border-radius: 6px 6px 6px 0;
+  background: var(--navy);
+  color: white;
+  font-weight: 700;
+}
+
+.quote-rating strong span {
+  font-size: .9em;
+  font-weight: 600;
+}
+
+.quote-price {
+  padding: 1rem clamp(.85rem, 2vw, 1.45rem) 1.2rem;
+  border-top: 1px solid var(--line);
+}
+
+.quote-offer {
+  display: inline-block;
+  margin-top: .55rem;
+  padding: .16rem .46rem;
+  border-radius: .35rem;
+  background: var(--soft);
+  color: var(--accent);
+  font-size: .78rem;
+  font-weight: 800;
+}
+
+.quote-nightly,
+.quote-total > div {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: .2rem .7rem;
+}
+
+.quote-nightly {
+  margin: .68rem 0 .6rem;
+  font-size: .9rem;
+}
+
+.quote-nightly dd {
+  margin: 0;
+  text-align: end;
+  font-weight: 800;
+}
+
+.quote-nightly del {
+  margin-inline-end: .2rem;
+  color: var(--muted);
+  font-weight: 500;
+}
+
+.quote-total {
+  padding: .65rem .8rem;
+  border-radius: .5rem;
+  background: var(--soft);
+}
+
+.quote-total strong {
+  color: var(--ink);
+  font-size: var(--price-size);
+  font-variant-numeric: tabular-nums;
+}
+
+.quote-total p,
+.quote-note {
+  color: var(--muted);
+  font-size: .78rem;
+}
+
+.quote-continue {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  margin-top: .8rem;
+}
+
+.quote-form button:disabled {
+  border-color: var(--line);
+  background: var(--soft);
+  color: var(--muted);
+  cursor: default;
+}
+
+.quote-note {
+  margin-top: .45rem;
+  text-align: center;
+}
+
+.test-notice {
+  display: flex;
+  align-items: center;
+  gap: .55rem;
+  padding: .65rem .8rem;
+  border-inline-start: 4px solid var(--accent);
+  border-radius: .25rem;
+  background: var(--soft);
+  color: var(--ink);
+  text-align: start;
+}
+
+.test-notice .ui-icon { color: var(--accent); }
+
+@media (max-width: 760px) {
+  .quote-form {
+    grid-template-columns: minmax(0, 1fr);
+    gap: .85rem;
+  }
+
+  .quote-property {
+    display: grid;
+    grid-template-columns: minmax(4.75rem, 30%) minmax(0, 1fr);
+    align-items: stretch;
+  }
+
+  .quote-photo {
+    height: auto;
+    min-height: 6.5rem;
+  }
+
+  .quote-photo .photo-fallback {
+    padding: .25rem;
+    text-align: center;
+  }
+}
+
+@media (max-width: 500px) {
+  .quote-hero-inner,
+  .quote-dates {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* Estimativa da estadia */
+body:has(.reservation-page) { background: #f5f7fa; }
+[data-theme="dark"] body:has(.reservation-page) { background: var(--page); }
+
+.reservation-page .quote-hero {
+  background: transparent;
+  border-bottom: 1px solid var(--line);
+  color: var(--ink);
+}
+.reservation-page .quote-hero-inner { padding-block: 1.15rem 1.4rem; }
+.reservation-page .quote-hero :is(h1, p) { grid-column: 1; }
+.reservation-page .quote-hero h1 { color: var(--ink); }
+.reservation-page .quote-hero p { color: var(--muted); font-size: .92rem; }
+.reservation-page .quote-back { color: var(--accent); }
+.reservation-page .quote-back:focus-visible { outline-color: var(--accent); }
+.reservation-page .quote-progress {
+  grid-column: 2;
+  grid-row: 1 / span 3;
+  justify-self: end;
+}
+.reservation-page .quote-progress li { gap: .4rem; color: var(--muted); }
+.reservation-page .quote-progress [aria-current] { color: var(--accent); }
+.reservation-page .quote-progress [aria-current]::before { content: none; }
+.reservation-page .quote-progress li + li::after { background: var(--line); }
+.step-number {
+  display: grid;
+  place-items: center;
+  width: 1.6rem;
+  height: 1.6rem;
+  border: 1px solid currentColor;
+  border-radius: 50%;
+  font-variant-numeric: tabular-nums;
+}
+[aria-current="step"] .step-number { background: var(--navy); border-color: var(--navy); color: white; }
+.reservation-page .quote-form { margin-top: 1.25rem; }
+.reservation-page .quote-section { padding: clamp(1rem, 2vw, 1.4rem); }
+.quote-highlight-grid, .quote-inclusions, .quote-benefits {
+  display: grid;
+  margin: .85rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+.quote-highlight-grid, .quote-inclusions { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.quote-highlight-grid { gap: .55rem; }
+.quote-highlight-grid li, .quote-inclusions li, .quote-benefits li {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  gap: .55rem;
+  line-height: 1.4;
+}
+.quote-highlight-grid li { padding: .65rem; border: 1px solid var(--line); border-radius: 8px; }
+.highlight-icon, .benefit-icon {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 50%;
+  background: var(--soft);
+  color: var(--accent);
+}
+.quote-highlight-grid strong, .quote-highlight-grid small { display: block; }
+.quote-highlight-grid strong { font-size: .85rem; }
+.quote-highlight-grid small, .quote-section .inclusion-note { color: var(--muted); font-size: var(--micro); }
+.quote-section .inclusion-note { margin-top: .9rem; }
+.quote-inclusions { gap: .75rem 1rem; }
+.quote-inclusions li, .quote-benefits li { font-size: .875rem; }
+.quote-inclusions .ui-icon, .quote-benefits .ui-icon { flex: none; color: var(--saving); }
+.reservation-page .quote-next {
+  border: 1px solid var(--line);
+  border-radius: var(--card-radius);
+  background: var(--surface);
+}
+.quote-next h2 { display: flex; align-items: center; gap: .55rem; }
+.benefit-icon { background: color-mix(in srgb, var(--saving) 10%, var(--surface)); color: var(--saving); }
+.quote-benefits { gap: .5rem; }
+.quote-next .quote-benefits + p { margin-top: .95rem; border-top: 1px solid var(--line); padding-top: .75rem; }
+.reservation-page .quote-total {
+  margin-top: .8rem;
+  padding: .85rem 0 .35rem;
+  border-top: 1px solid var(--line);
+  border-radius: 0;
+  background: transparent;
+}
+.reservation-page .quote-total > div { align-items: center; }
+.reservation-page .quote-total span { font-weight: 600; }
+#reserva-valor { color: var(--accent); font-size: 1rem; font-weight: 600; }
+#reserva-valor.is-ready { color: var(--ink); font-size: 1.5rem; font-weight: 700; }
+.reservation-page .quote-continue {
+  align-items: center;
+  justify-content: center;
+  gap: .55rem;
+  min-height: 2.9rem;
+  background: #006ce4;
+  color: white;
+  border: 1px solid #006ce4;
+}
+.reservation-page .quote-continue:enabled:hover { background: #005bbf; }
+.reservation-page .quote-continue:disabled {
+  opacity: 1;
+  background: var(--soft);
+  color: color-mix(in srgb, var(--accent) 80%, var(--ink));
+  border-color: var(--accent);
+}
+.reservation-page .quote-note {
+  justify-content: center;
+  padding: .15rem 0 0;
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  font-size: var(--micro);
+}
+.reservation-page .quote-note .ui-icon { width: .95rem; height: .95rem; color: inherit; }
+
+@media (min-width: 1040px) {
+  .quote-inclusions { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+@media (max-width: 760px) {
+  .reservation-page .quote-main { display: contents; }
+  .reservation-page .quote-summary { order: 1; }
+  .quote-highlights { order: 2; }
+  .quote-included { order: 3; }
+  .reservation-page .quote-next { order: 4; }
+}
+@media (max-width: 580px) {
+  .reservation-page .quote-hero-inner { grid-template-columns: minmax(0, 1fr); }
+  .reservation-page .quote-progress { grid-area: auto / 1; order: 1; justify-self: start; margin-top: .5rem; }
+}
+@media (max-width: 390px) {
+  .quote-highlight-grid { grid-template-columns: minmax(0, 1fr); }
+}

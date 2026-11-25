@@ -11,8 +11,13 @@ const estados = {
 };
 const moeda = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" });
 const parametros = new URLSearchParams(location.search);
-const camposBusca = ["destino", "tipo", "checkin", "checkout", "hospedes"];
+const camposBusca = ["destino", "tipo", "checkin", "checkout", "adultos", "criancas"];
 const chavesBusca = [...camposBusca, "oferta", "ordem"];
+// Links antigos traziam somente o total de hóspedes, sem a composição do grupo.
+if (parametros.has("hospedes") && !parametros.has("adultos")) {
+  parametros.set("adultos", parametros.get("hospedes"));
+}
+parametros.delete("hospedes");
 
 // Armazenamento local
 function ler(chave, padrao = null) {
@@ -63,6 +68,39 @@ function urlResultados() {
 }
 
 // Fotos e cartões do catálogo
+function iconeInterface(nome, classes = "") {
+  return `<svg class="ui-icon ${classes}" aria-hidden="true" focusable="false"><use href="images/interface.svg#${nome}"></use></svg>`;
+}
+
+function classificacaoHospedes(avaliacao) {
+  if (avaliacao.classificacao) return avaliacao.classificacao;
+  if (avaliacao.nota >= 9.5) return "Excepcional";
+  if (avaliacao.nota >= 9) return "Fabuloso";
+  if (avaliacao.nota >= 8) return "Muito bom";
+  return avaliacao.nota >= 7 ? "Bom" : "Regular";
+}
+
+// As quatro famílias mais úteis na comparação aparecem primeiro nos cartões.
+function principaisComodidades(nomes, limite) {
+  const familias = ["cafe", "carro", "piscina", "wifi"];
+  const principais = familias.map(icone => nomes.find(nome => comodidadesDetalhes[nome]?.[0] === icone));
+  return [...new Set([...principais.filter(Boolean), ...nomes])].slice(0, limite);
+}
+
+function resumoDoCard(hotel) {
+  const dados = dadosDetalhes[hotel.id];
+  if (!dados) return "";
+  const { avaliacao, comodidades } = dados;
+  return `${avaliacao ? `<div class="stay-rating">
+          <span class="score-badge">${avaliacao.nota.toLocaleString("pt-BR", { minimumFractionDigits: 1 })}</span>
+          <span><b>${classificacaoHospedes(avaliacao)}</b><small>${avaliacao.total.toLocaleString("pt-BR")} avaliações</small></span>
+        </div>` : ""}
+        <ul class="card-amenities" aria-label="Principais comodidades">
+          ${principaisComodidades(comodidades, 3).map(nome => `<li>${iconeInterface(comodidadesDetalhes[nome]?.[0] || "check")}${nome}</li>`).join("")}
+        </ul>
+        <span class="card-cancel" title="Condição da reserva simulada">${iconeInterface("check")} Cancelamento grátis</span>`;
+}
+
 function fotoHotel(hotel, carregamento = "lazy") {
   return `<img src="${hotel.imagem}" alt="${hotel.legenda}" loading="${carregamento}">
     <span class="photo-fallback" hidden>Foto indisponível</span>`;
@@ -82,6 +120,7 @@ function observarFotos(area) {
 function mostrarCards(area, hoteis, somenteOfertas = false) {
   area.classList.toggle("offer-grid", somenteOfertas);
   area.innerHTML = hoteis.map((hotel) => {
+    const linkDetalhes = urlHotel("detalhes.html", hotel.id);
     const local = somenteOfertas
       ? `${hotel.cidade} · ${estados[hotel.uf] || hotel.uf}`
       : `${hotel.cidade}, ${hotel.uf} · ${tipos[hotel.tipo]}`;
@@ -93,12 +132,14 @@ function mostrarCards(area, hoteis, somenteOfertas = false) {
         </div>
         <div class="stay-content card-body">
           <p class="subtle">${local}</p>
-          <h3><a href="${urlHotel("detalhes.html", hotel.id)}">${hotel.nome}</a></h3>
+          <h3><a href="${linkDetalhes}">${hotel.nome}</a></h3>
+          ${resumoDoCard(hotel)}
           <div class="stay-rates">
             <p class="price-label">${hotel.referencia ? "Diária" : "Diária simulada"}</p>
-            <p class="stay-price">${moeda.format(hotel.preco)} <small>/ noite</small></p>
+            <p class="stay-price">${hotel.desconto ? `<del>${moeda.format(hotel.preco)}</del>` : moeda.format(hotel.preco)} <small>/ noite</small></p>
             ${hotel.desconto ? `<p class="price-label sale-price">Black Friday simulada: <strong>${moeda.format(diaria(hotel))}</strong> / noite</p>` : ""}
           </div>
+          <a class="action card-details" href="${linkDetalhes}" aria-label="Ver detalhes de ${hotel.nome}">Ver detalhes <span aria-hidden="true">→</span></a>
         </div>
       </div></article>
     `;
@@ -153,9 +194,7 @@ function campoData(nome, rotulo, id, ajuda) {
       <input id="${id}" name="${nome}" type="text" inputmode="numeric"
         placeholder="dd/mm/aaaa" autocomplete="off" aria-describedby="${ajuda}">
       <button class="action secondary" type="button" aria-label="Abrir calendário de ${rotulo}">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
-          <rect x="3" y="5" width="18" height="16" rx="2"/><path d="M7 3v4m10-4v4M3 10h18"/>
-        </svg>
+        ${iconeInterface("calendario")}
         <span>Calendário</span>
       </button>
       <input class="reservation-picker" type="date" tabindex="-1" aria-hidden="true" aria-label="Calendário de ${rotulo}">
@@ -273,7 +312,7 @@ if (busca) {
   for (const chave of camposBusca) {
     if (parametros.has(chave)) busca.elements[chave].value = parametros.get(chave);
   }
-  if (!busca.elements.hospedes.value) busca.elements.hospedes.value = "2";
+  configurarViajantes(busca);
   if (!busca.elements.tipo.value) busca.querySelector('[name="tipo"][value=""]').checked = true;
   if (parametros.get("oferta") === "1") {
     const oferta = document.createElement("input");
@@ -293,11 +332,43 @@ if (busca) {
   });
 }
 
+// O destaque acompanha a seção aberta, inclusive na navegação pelo histórico.
+function atualizarMenuPrincipal() {
+  const menu = document.querySelector(".site-header nav");
+  const inicio = menu.querySelector('[href="index.html"]');
+  const hoteis = menu.querySelector('[href="hospedagens.html"]');
+  const ofertas = menu.querySelector('[href="index.html#ofertas"]');
+  if (!document.querySelector("#ofertas, #lista-hospedagens")) return;
+  for (const link of [inicio, hoteis, ofertas]) link.removeAttribute("aria-current");
+  const campanha = location.hash === "#ofertas" || (lista && parametros.get("oferta") === "1");
+  (campanha ? ofertas : lista ? hoteis : inicio).setAttribute("aria-current", campanha ? "location" : "page");
+}
+
 // Destaques e resultados do catálogo
 const destaques = document.querySelector("#destaques");
 if (destaques) {
   const ids = [12, 1, 25, 34, 4, 41, 2, 9];
   mostrarCards(destaques, ids.map((id) => hospedagens.find((hotel) => hotel.id === id)));
+  const atalhos = document.querySelectorAll('main a[href^="detalhes.html"], main a[href^="hospedagens.html"]');
+  function atualizarAtalhos() {
+    const { adultos, criancas, checkin, checkout } = busca.elements;
+    if (!adultos.validity.valid || !criancas.validity.valid) return;
+    for (const link of atalhos) {
+      const destino = new URL(link.href);
+      gravarGrupo(destino.searchParams, { adultos: adultos.value, criancas: criancas.value });
+      for (const campo of [checkin, checkout]) {
+        if (checkin.validity.valid && checkout.validity.valid && campo.value) {
+          destino.searchParams.set(campo.name, dataDigitada(campo.value));
+        } else {
+          destino.searchParams.delete(campo.name);
+        }
+      }
+      link.href = destino.href;
+    }
+  }
+  busca.addEventListener("input", atualizarAtalhos);
+  busca.addEventListener("change", atualizarAtalhos);
+  atualizarAtalhos();
 }
 
 const lista = document.querySelector("#lista-hospedagens");
@@ -311,13 +382,13 @@ if (lista) {
     history.replaceState(null, "", location.pathname + (parametros.size ? "?" + parametros : "") + location.hash);
   }
   function atualizarResultados() {
+    atualizarMenuPrincipal();
     const consulta = normalizar(parametros.get("destino") || "").match(/[a-z0-9]+/g) || [];
-    const quantidadeHospedes = Number(parametros.get("hospedes")) || 1;
     const tipo = parametros.get("tipo");
     const selecionados = hospedagens.filter((hotel) => {
       const local = normalizar([hotel.nome, hotel.cidade, hotel.uf, hotel.bairro].join(" "));
       return consulta.every((termo) => local.includes(termo)) &&
-        (!Object.hasOwn(tipos, tipo) || hotel.tipo === tipo) && hotel.capacidade >= quantidadeHospedes &&
+        (!Object.hasOwn(tipos, tipo) || hotel.tipo === tipo) &&
         (!somenteOfertas.checked || hotel.desconto > 0);
     });
     if (ordenacao.value === "price") selecionados.sort((a, b) => (somenteOfertas.checked ? diaria(a) - diaria(b) : a.preco - b.preco));
@@ -328,7 +399,7 @@ if (lista) {
     document.querySelector("#titulo-resultados").textContent = emOferta ? "Ofertas de Black Friday" : "Resultados";
     document.querySelector("#aviso-ofertas").hidden = !emOferta;
     mostrarCards(lista, selecionados, emOferta);
-    if (!selecionados.length) lista.innerHTML = '<p class="notice">Nenhum resultado. Ajuste o destino, o tipo ou o número de hóspedes.</p>';
+    if (!selecionados.length) lista.innerHTML = '<p class="notice">Nenhum resultado. Ajuste o destino, o tipo ou o filtro de ofertas.</p>';
   }
   somenteOfertas.addEventListener("change", () => {
     const campo = busca.querySelector('[name="oferta"]');
@@ -355,13 +426,18 @@ if (lista) {
   atualizarResultados();
 }
 
+atualizarMenuPrincipal();
+window.addEventListener("hashchange", atualizarMenuPrincipal);
+
 // Carrossel Black Friday
 const carrossel = document.querySelector("#ofertas-luxe");
 if (carrossel) {
   for (const selo of carrossel.querySelectorAll("[data-deal-badge]")) {
     const hotel = hospedagens.find(({ id }) => id === Number(selo.dataset.dealBadge));
     selo.textContent = "Black Friday · " + hotel.desconto + "% OFF simulado";
-    selo.closest(".deal-copy").querySelector(".deal-price").textContent = moeda.format(diaria(hotel)) + " / noite";
+    const preco = selo.closest(".deal-copy").querySelector(".deal-price");
+    preco.textContent = moeda.format(diaria(hotel)) + " / noite";
+    preco.insertAdjacentHTML("beforebegin", resumoDoCard(hotel));
   }
   const slides = Array.from(carrossel.querySelectorAll(".carousel-item"));
   function anunciar(indice) {
@@ -385,157 +461,62 @@ if (carrossel) {
   }
 }
 
+function camposViajantes() {
+  return `<label>Adultos<input name="adultos" type="number" inputmode="numeric" min="1" step="1" required></label>
+    <label>Crianças<input name="criancas" type="number" inputmode="numeric" min="0" step="1" required></label>`;
+}
+
+function configurarViajantes(form, aoAlterar) {
+  for (const nome of ["adultos", "criancas"]) {
+    const campo = form.elements[nome];
+    const recebido = parametros.get(nome);
+    const numero = Number(recebido);
+    const valido = recebido && Number.isSafeInteger(numero) && numero >= Number(campo.min);
+    campo.value = valido ? numero : (nome === "adultos" ? 2 : 0);
+    campo.addEventListener("input", () => {
+      campo.setCustomValidity(campo.value && !Number.isSafeInteger(campo.valueAsNumber)
+        ? "Informe uma quantidade inteira válida." : "");
+      aoAlterar?.();
+    });
+  }
+}
+
+function grupoDaReserva(form, hotel) {
+  const { adultos, criancas } = form.elements;
+  if (!adultos.validity.valid || !criancas.validity.valid) return null;
+  const total = adultos.valueAsNumber + criancas.valueAsNumber;
+  return { adultos: adultos.valueAsNumber, criancas: criancas.valueAsNumber, quartos: Math.ceil(total / hotel.capacidade) };
+}
+
+function quantidadeTexto(numero, singular, plural) {
+  return numero + " " + (numero === 1 ? singular : plural);
+}
+
+function resumoGrupo(grupo) {
+  const adultos = quantidadeTexto(grupo.adultos, "adulto", "adultos");
+  const criancas = quantidadeTexto(grupo.criancas, "criança", "crianças");
+  return grupo.criancas ? adultos + " e " + criancas : adultos;
+}
+
+function gravarGrupo(consulta, grupo) {
+  consulta.delete("hospedes");
+  consulta.set("adultos", grupo.adultos);
+  consulta.set("criancas", grupo.criancas);
+}
+
 // Detalhes e estimativa da estadia
 const detalhes = document.querySelector("#detalhes-hotel");
 const reserva = document.querySelector("#reserva-hotel");
 if (detalhes || reserva) {
   const hotel = hospedagens.find(({ id }) => id === Number(parametros.get("id")));
   if (!hotel) {
-    (detalhes || reserva).innerHTML = '<h1>Hospedagem não encontrada</h1><p><a href="hospedagens.html">Voltar ao catálogo</a></p>';
+    (detalhes || reserva).innerHTML = `<div class="${reserva ? "shell inner-page" : ""}">
+      <h1>Hospedagem não encontrada</h1><p><a href="hospedagens.html">Voltar ao catálogo</a></p>
+    </div>`;
   } else if (detalhes) {
-    document.title = hotel.nome + " | LuxeStay";
-    detalhes.innerHTML = `
-      <a class="text-link back-link" href="${urlResultados()}">← Voltar às hospedagens</a>
-      <p class="eyebrow">${tipos[hotel.tipo]} · ${hotel.cidade}, ${hotel.uf}</p>
-      <h1>${hotel.nome}</h1>
-      <p class="subtle">${hotel.bairro}</p>
-      <div class="detail-layout">
-        <div>
-          <div class="stay-photo">${fotoHotel(hotel, "eager")}</div>
-          ${hotel.fonteFoto ? `<p class="detail-caption"><a href="${hotel.fonteFoto}" rel="noopener noreferrer">Crédito da foto</a></p>` : ""}
-          ${hotel.fonte ? `<p class="detail-caption"><a href="${hotel.fonte}" rel="noopener noreferrer">${hotel.referencia ? "Ver anúncio na Trivago" : "Fonte da foto"}</a></p>` : ""}
-          <div class="detail-about"><h2>Sobre a hospedagem</h2><p>${hotel.descricao}</p></div>
-        </div>
-        <aside class="surface stack" aria-label="Preço e reserva">
-          ${hotel.desconto ? `<p class="eyebrow">Black Friday · ${hotel.desconto}% de desconto simulado</p>` : ""}
-          <p class="stay-price">${moeda.format(diaria(hotel))} <small>/ noite</small></p>
-          <p class="subtle">${hotel.referencia ? "Preço e disponibilidade podem variar." : "Diária ilustrativa."}</p>
-          <p class="subtle">A simulação deste projeto aceita até ${hotel.capacidade} hóspedes.</p>
-          <a class="action" href="${urlHotel("reserva.html", hotel.id)}">Ver preço e reservar →</a>
-        </aside>
-      </div>`;
-    observarFotos(detalhes);
+    renderizarDetalhes(detalhes, hotel);
   } else {
-    reserva.innerHTML = `
-      <a class="text-link back-link" href="${urlHotel("detalhes.html", hotel.id)}">← Voltar aos detalhes</a>
-      <h1>Estimativa da estadia</h1><p class="subtle">${hotel.nome}</p>
-      <form class="surface stack contact-form quote-form">
-        <p id="reserva-data-ajuda" class="sr-only">Digite dia, mês e ano ou use o calendário.</p>
-        <div class="quote-dates">
-          ${campoData("checkin", "Check-in", "reserva-checkin", "reserva-data-ajuda")}
-          ${campoData("checkout", "Check-out", "reserva-checkout", "reserva-data-ajuda")}
-        </div>
-        <p id="total-reserva" class="notice" aria-live="polite"></p>
-        <button class="action" type="submit" disabled>Ir para pagamento →</button>
-      </form>`;
-    const form = reserva.querySelector("form");
-    const total = form.querySelector("#total-reserva");
-    const continuar = form.querySelector("button[type=submit]");
-
-    function atualizarTotal(datas) {
-      const noites = datas ? noitesEstadia(datas.entrada, datas.saida) : 0;
-      total.textContent = noites ?
-        (noites === 1 ? "1 noite" : noites + " noites") + " · Total estimado de " + moeda.format(noites * diaria(hotel)) :
-        "Escolha as datas para ver o valor.";
-      continuar.disabled = !datas;
-    }
-
-    const validarDatas = configurarCamposData(form, true, atualizarTotal);
-    form.addEventListener("submit", (evento) => {
-      evento.preventDefault();
-      const datas = validarDatas();
-      if (!datas) {
-        form.reportValidity();
-        return;
-      }
-      const destino = new URL(urlHotel("pagamento.html", hotel.id), location.href);
-      destino.searchParams.set("checkin", datas.entrada);
-      destino.searchParams.set("checkout", datas.saida);
-      location.assign(destino.href);
-    });
-  }
-}
-
-// Checkout e confirmação de teste
-const pagamento = document.querySelector("#pagamento-hotel");
-if (pagamento) {
-  const hotel = hospedagens.find(({ id }) => id === Number(parametros.get("id")));
-  const entrada = dataDigitada(dataExibida(parametros.get("checkin") || ""));
-  const saida = dataDigitada(dataExibida(parametros.get("checkout") || ""));
-  const hospedesBusca = Number(parametros.get("hospedes"));
-  const diasValidos = entrada && saida && entrada >= dataLocal(new Date()) && saida > entrada;
-  const reservaValida = hotel && diasValidos;
-
-  if (!reservaValida) {
-    const voltar = hotel ? urlHotel("reserva.html", hotel.id) : "hospedagens.html";
-    pagamento.innerHTML = `<h1>Pagamento</h1>
-      <p class="notice">Revise a hospedagem e as datas para continuar.</p>
-      <a class="action" href="${voltar}">${hotel ? "Revisar estadia" : "Ver hospedagens"}</a>`;
-  } else {
-    const noites = noitesEstadia(entrada, saida);
-    const total = moeda.format(noites * diaria(hotel));
-    const hospedesInicial = Number.isInteger(hospedesBusca) && hospedesBusca >= 1 && hospedesBusca <= hotel.capacidade ? hospedesBusca : 1;
-    pagamento.innerHTML = `
-      <a class="text-link back-link" id="checkout-editar" href="${urlHotel("reserva.html", hotel.id)}">← Editar estadia</a>
-      <h1>Pagamento</h1>
-      <div class="detail-layout checkout-layout">
-        <section class="surface stack" aria-labelledby="checkout-titulo">
-          <h2 id="checkout-titulo">Resumo da reserva</h2>
-          <h3>${hotel.nome}</h3>
-          <dl class="checkout-summary">
-            <dt>Check-in</dt><dd>${dataExibida(entrada)}</dd>
-            <dt>Check-out</dt><dd>${dataExibida(saida)}</dd>
-            <dt>Noites</dt><dd>${noites}</dd>
-          </dl>
-          <p class="stay-price">Total estimado ${total}</p>
-        </section>
-        <section class="surface stack" aria-labelledby="checkout-pagamento">
-          <h2 id="checkout-pagamento">Confirmar reserva</h2>
-          <label for="checkout-hospedes">Hóspedes</label>
-          <select id="checkout-hospedes">
-            ${Array.from({ length: hotel.capacidade }, (_, i) => `<option value="${i + 1}">${i + 1}</option>`).join("")}
-          </select>
-          <p class="notice">Modo de teste. O LuxeStay ainda não recebe pagamentos nem confirma disponibilidade com o hotel.</p>
-          <button class="action" type="button" id="checkout-confirmar">Confirmar reserva</button>
-          <p class="form-status" id="checkout-status" role="status"></p>
-        </section>
-      </div>`;
-
-    const botao = pagamento.querySelector("#checkout-confirmar");
-    const status = pagamento.querySelector("#checkout-status");
-    const hospedes = pagamento.querySelector("#checkout-hospedes");
-    const editar = pagamento.querySelector("#checkout-editar");
-    hospedes.value = String(hospedesInicial);
-    const chaveReserva = () => ["reserva-teste", hotel.id, entrada, saida, hospedes.value].join(":");
-    function mostrarConfirmacao(codigo) {
-      status.textContent = "Reserva de teste registrada neste navegador. Código: " + codigo;
-      botao.disabled = true;
-    }
-    function atualizarConfirmacao() {
-      const existente = ler(chaveReserva());
-      status.textContent = "";
-      botao.disabled = false;
-      if (typeof existente === "string") mostrarConfirmacao(existente);
-    }
-    hospedes.addEventListener("change", () => {
-      parametros.set("hospedes", hospedes.value);
-      const url = new URL(location.href);
-      url.searchParams.set("hospedes", hospedes.value);
-      history.replaceState(null, "", url);
-      editar.href = urlHotel("reserva.html", hotel.id);
-      atualizarConfirmacao();
-    });
-    atualizarConfirmacao();
-
-    botao.addEventListener("click", () => {
-      const chave = chaveReserva();
-      const codigo = ler(chave) || "LS-TESTE-" + crypto.randomUUID().slice(0, 8).toUpperCase();
-      if (!salvar(chave, codigo)) {
-        status.textContent = "O navegador não conseguiu salvar a reserva de teste.";
-        return;
-      }
-      mostrarConfirmacao(codigo);
-    });
+    renderizarReserva(reserva, hotel);
   }
 }
 
@@ -545,77 +526,4 @@ contato?.addEventListener("submit", (evento) => {
   evento.preventDefault();
   contato.reset();
   contato.querySelector(".form-status").textContent = "Envio simulado. Nenhuma mensagem foi transmitida.";
-});
-
-// Conta e autenticação local
-function atualizarConta() {
-  const atual = ler("sessao");
-  document.querySelector("[data-account]").textContent = atual ? "Minha conta" : "Entrar";
-  const painel = document.querySelector("#sessao-conta");
-  if (!painel) return;
-  painel.hidden = !atual;
-  painel.textContent = atual ? "Você entrou como " + atual.nome + "." : "";
-  document.querySelector("#sair-conta").hidden = !atual;
-  document.querySelector("#formularios-conta").hidden = Boolean(atual);
-}
-
-async function assinatura(senha, sal) {
-  const material = await crypto.subtle.importKey("raw", new TextEncoder().encode(senha), "PBKDF2", false, ["deriveBits"]);
-  const hash = await crypto.subtle.deriveBits({
-    name: "PBKDF2", salt: new TextEncoder().encode(sal), iterations: 600000, hash: "SHA-256"
-  }, material, 256);
-  return Array.from(new Uint8Array(hash), (byte) => byte.toString(16).padStart(2, "0")).join("");
-}
-
-atualizarConta();
-for (const form of document.querySelectorAll("#form-login, #form-cadastro")) {
-  form.addEventListener("submit", async (evento) => {
-    evento.preventDefault();
-    const status = form.querySelector(".form-status");
-    const dados = new FormData(form);
-    const email = dados.get("email").trim().toLowerCase();
-    const senha = dados.get("senha");
-    const cadastro = form.id === "form-cadastro";
-    const nome = cadastro ? dados.get("nome").trim() : "";
-    const botao = form.querySelector("button");
-    botao.disabled = true;
-    try {
-      const contas = ler("contas", []);
-      const conta = contas.find((item) => item.email === email);
-      if (cadastro && (!nome || conta)) {
-        status.textContent = conta ? "Já existe uma conta com esse e-mail neste navegador." : "Preencha seu nome.";
-        return;
-      }
-      if (!cadastro && (!conta || conta.hash !== await assinatura(senha, conta.sal))) {
-        status.textContent = "E-mail ou senha inválidos.";
-        return;
-      }
-      if (cadastro) {
-        const sal = crypto.randomUUID();
-        const nova = { email, nome, sal, hash: await assinatura(senha, sal) };
-        const atuais = ler("contas", []);
-        if (atuais.some((item) => item.email === email)) {
-          status.textContent = "Já existe uma conta com esse e-mail neste navegador.";
-          return;
-        }
-        if (!salvar("contas", [...atuais, nova])) throw new Error("Armazenamento indisponível");
-      }
-      if (!salvar("sessao", { nome: cadastro ? nome : conta.nome })) throw new Error("Armazenamento indisponível");
-      form.reset();
-      status.textContent = "";
-      atualizarConta();
-      const sessao = document.querySelector("#sessao-conta");
-      sessao.tabIndex = -1;
-      sessao.focus();
-    } catch {
-      status.textContent = "Não foi possível acessar a conta. Abra o projeto pelo Live Server ou por HTTPS.";
-    } finally {
-      botao.disabled = false;
-    }
-  });
-}
-document.querySelector("#sair-conta")?.addEventListener("click", () => {
-  salvar("sessao", null);
-  atualizarConta();
-  document.querySelector("#form-login input").focus();
 });

@@ -1,0 +1,124 @@
+/* Acesso e perfil compartilham as cores e a tipografia do restante do site. */
+body:has(.account-page, .profile-page) { background: var(--account-page, #f5f7fa); }
+[data-theme="dark"] { --account-page: var(--page); }
+.login-page { display: grid; align-content: start; justify-items: center; padding: clamp(1.35rem, 4.5vw, 3.4rem) .85rem; }
+.auth-card, .profile-panel, .profile-sidebar {
+  min-width: 0;
+  background: var(--surface);
+  color: var(--ink);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  box-shadow: 0 4px 20px rgba(15, 23, 42, .06);
+}
+.auth-card { width: min(100%, 480px); padding: clamp(1.1rem, 3vw, 2rem); }
+.auth-card h1 { margin-bottom: 1rem; }
+.auth-tabs { display: flex; border-bottom: 1px solid var(--line); margin-bottom: 1.2rem; }
+.auth-tabs button {
+  flex: 1; border: 0; border-bottom: 3px solid transparent; padding: .6rem .4rem;
+  color: var(--muted); background: transparent; font-weight: 600;
+}
+.auth-tabs button[aria-selected="true"] { border-bottom-color: var(--accent); color: var(--accent); }
+.social-actions, .account-form { display: grid; gap: .75rem; }
+.social-actions { gap: .5rem; }
+.social-button {
+  position: relative; display: flex; justify-content: center; align-items: center;
+  min-height: 2.8rem; padding: .6rem 2.65rem; border: 1px solid #cbd5e1;
+  background: #fff; color: #1a1a1a; border-radius: 6px; font-size: .9rem; font-weight: 600;
+}
+.social-button img { position: absolute; left: .85rem; object-fit: contain; width: 1.3rem; height: 1.3rem; }
+.social-button:hover { border-color: #006ce4; box-shadow: inset 0 0 0 1px #006ce4; }
+.social-apple { background: #000; color: white; border-color: #000; }
+.social-apple img { filter: brightness(0) invert(1); }
+.email-divider { display: flex; align-items: center; gap: .8rem; margin: 1.15rem 0; color: var(--muted); font-size: .75rem; }
+.email-divider::before, .email-divider::after { content: ""; height: 1px; flex: 1; background: var(--line); }
+.account-form label, .password-field > label { display: grid; gap: .3rem; color: var(--ink); font-size: .82rem; font-weight: 600; }
+.account-form input:not([type="checkbox"]) { min-width: 0; min-height: 2.8rem; font-size: .95rem; font-weight: 400; }
+.account-form input[aria-invalid="true"] { border-color: #b34438; }
+.account-form input::placeholder { color: var(--muted); opacity: .95; }
+.account-pair { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: .75rem; }
+.password-field { min-width: 0; display: grid; align-content: start; gap: .3rem; }
+.password-control { position: relative; }
+.password-control input:not([type="checkbox"]) { padding-right: 2.7rem; }
+.eye-button {
+  position: absolute; inset: 1px 1px 1px auto; display: grid; place-items: center;
+  width: 2.55rem; border: 0; border-radius: 5px; color: var(--muted); background: transparent;
+}
+.eye-button:hover { color: var(--accent); background: var(--soft); }
+.eye-button:focus-visible { outline-offset: -3px; }
+.password-rules { display: flex; gap: .2rem 1rem; flex-wrap: wrap; color: var(--muted); font-size: .75rem; }
+.password-rules [data-estado="ok"], .confirmed-badge { color: var(--saving); }
+.password-rules [data-estado="erro"], .account-error { color: #a02d27; }
+[data-theme="dark"] :is(.account-error, .password-rules [data-estado="erro"]) { color: #ffb6ac; }
+.cep-status, .demo-note { color: var(--muted); font-size: .75rem; }
+.demo-note { display: flex; align-items: flex-start; gap: .5rem; margin-top: 1.1rem; padding-top: .85rem; border-top: 1px solid var(--line); }
+.demo-note svg { margin-top: .15rem; color: var(--accent); }
+.cep-status:not(:empty) { display: block; margin-top: .3rem; }
+.account-submit { width: 100%; padding: 14px; }
+.account-error { font-size: .84rem; font-weight: 600; }
+.account-error:not(:empty) { margin-top: .6rem; }
+.account-error:empty { display: none; }
+
+.profile-page { padding-block: clamp(1.4rem, 3.5vw, 2.8rem); }
+.profile-page > h1 { margin-bottom: 1.1rem; }
+.profile-layout { display: grid; grid-template-columns: minmax(13.25rem, 17rem) minmax(0, 1fr); align-items: start; gap: clamp(1rem, 2vw, 1.65rem); }
+.profile-sidebar { overflow: hidden; }
+.member-card { padding: 1.3rem; display: grid; justify-items: start; gap: .4rem; background: var(--navy); color: white; }
+.account-avatar.large { width: 3.2rem; height: 3.2rem; background: #e4efff; color: #003b95; font-size: 1.25rem; }
+.member-card strong { font-size: 1.15rem; line-height: 1.3; overflow-wrap: anywhere; }
+.member-badge { padding: .15rem .5rem; border: 1px solid #ffffff6b; border-radius: 99px; font-size: .72rem; font-weight: 600; }
+.member-card p { font-size: .78rem; color: #e9f1ff; }
+.profile-nav { display: grid; gap: .2rem; padding: .45rem; }
+.profile-nav :is(a,button) {
+  display: flex; align-items: center; gap: .6rem; min-height: 2.65rem; padding: .45rem .65rem;
+  border: 0; border-radius: 5px; background: transparent; text-decoration: none;
+  font-size: .88rem; font-weight: 600; text-align: start; color: var(--ink);
+}
+.profile-nav a:hover, .profile-nav a[aria-current] { color: var(--accent); background: var(--soft); }
+.profile-nav button { color: #a02d27; border-top: 1px solid var(--line); border-radius: 0; }
+[data-theme="dark"] .profile-nav button { color: #ffb6ac; }
+.profile-nav button:hover, .account-edit:hover { text-decoration: underline; }
+.profile-content { min-width: 0; }
+.profile-panel { padding: clamp(1rem, 2.7vw, 1.8rem); scroll-margin-block-start: 1rem; }
+.panel-heading { display: flex; justify-content: space-between; align-items: center; gap: .6rem 1rem; flex-wrap: wrap; border-bottom: 1px solid var(--line); padding-bottom: 1rem; }
+.panel-heading h2 { font-size: clamp(1.2rem, 2.2vw, 1.45rem); }
+.account-edit { display: inline-flex; align-items: center; gap: .4rem; border: 0; border-radius: 5px; padding: .45rem .65rem; background: var(--soft); color: var(--accent); font-weight: 600; }
+.personal-rows, .booking-details { margin: 0; }
+.personal-rows > div { display: grid; grid-template-columns: minmax(7rem, 30%) minmax(0,1fr); gap: .45rem; padding: .95rem 0; border-bottom: 1px solid var(--line); }
+.personal-rows > div:last-child { border: 0; padding-bottom: .25rem; }
+.personal-rows dt, .booking-details dt { font-weight: 500; color: var(--muted); }
+.personal-rows dd, .booking-details dd { margin: 0; overflow-wrap: anywhere; }
+.profile-form { margin-top: 1rem; max-width: 40rem; }
+.form-actions { display: flex; flex-wrap: wrap; gap: .5rem; }
+#acesso-social:not([hidden]) { margin-top: 1rem; }
+#reservas-perfil { display: grid; gap: .85rem; padding-top: 1rem; }
+.empty-bookings { padding: 1.5rem .5rem; display: grid; justify-items: center; gap: .55rem; text-align: center; }
+.empty-bookings p, .booking-city, .booking-code { color: var(--muted); font-size: .85rem; }
+.empty-icon { display: grid; place-items: center; width: 3.2rem; height: 3.2rem; border-radius: 50%; background: var(--soft); color: var(--accent); font-size: 1.35rem; }
+.empty-bookings .action { margin-top: .45rem; }
+.booking-card { border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+.booking-preview, .booking-details, .booking-foot { padding: .85rem 1rem; }
+.booking-preview { display: flex; gap: .85rem; align-items: center; }
+.booking-preview .stay-photo { flex: 0 0 5.4rem; height: 4.8rem; border-radius: 6px; }
+.booking-preview h3 { margin-block: .3rem .1rem; }
+.booking-preview a { text-decoration: none; }
+.booking-preview a:hover { text-decoration: underline; }
+.confirmed-badge { display: inline-block; padding: .15rem .45rem; border-radius: 4px; background: #e1f4e9; color: #11613d; font-size: .73rem; font-weight: 700; }
+.booking-details { display: flex; flex-wrap: wrap; gap: .55rem 1.6rem; border-top: 1px solid var(--line); }
+.booking-details dt { font-size: .75rem; }
+.booking-foot { display: flex; align-items: center; justify-content: space-between; gap: .5rem; flex-wrap: wrap; background: var(--soft); }
+.booking-total { font-size: 1.25rem; padding-left: .25rem; }
+.checkout-return { margin: 0 0 1rem; }
+.profile-toast:not(:empty) { position: fixed; z-index: 5; bottom: 1rem; left: 50%; transform: translateX(-50%); width: max-content; max-width: calc(100% - 2rem); padding: .75rem 1rem; background: #155d3c; color: white; border-radius: 7px; box-shadow: var(--card-shadow); }
+@media (max-width: 720px) {
+  .profile-layout { grid-template-columns: minmax(0, 1fr); }
+  .member-card { grid-template-columns: auto 1fr; column-gap: .8rem; align-items: center; }
+  .member-card .account-avatar { grid-row: 1 / 4; }
+  .profile-nav { grid-template-columns: repeat(2, minmax(0,1fr)); }
+  .profile-nav button { border: 0; }
+}
+@media (max-width: 430px) {
+  .personal-rows > div { grid-template-columns: minmax(0, 1fr); gap: .1rem; }
+  .account-pair { grid-template-columns: minmax(0,1fr); }
+  .booking-preview { align-items: flex-start; }
+  .booking-preview .stay-photo { flex-basis: 4rem; height: 4rem; }
+}
